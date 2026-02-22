@@ -178,15 +178,12 @@ export default function RoomPage() {
         });
 
         setJoined(true);
-      } catch (e: any) {
-        const msg =
-          e?.message === "INVITE_USED"
-            ? t.inviteUsed
-            : e?.message === "INVITE_NOT_FOUND"
-            ? t.needInvite
-            : t.roomFull;
-        setJoiningError(msg);
-      }
+        } catch (e: unknown) {
+          const raw = e instanceof Error ? e.message : String(e);
+
+          // 🔎 화면에 실제 원인을 그대로 보여주기 (진단용)
+          setJoiningError(`Join failed: ${raw}`);
+        }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId, uid]);
