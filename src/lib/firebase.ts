@@ -1,4 +1,4 @@
-import { initializeApp, getApps } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
@@ -11,17 +11,11 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
 };
 
-const app =
-  getApps().length === 0
-    ? initializeApp(firebaseConfig)
-    : getApps()[0];
+// ✅ 서버에서는 Firebase Auth/Firestore를 만들지 않음 (빌드/프리렌더 에러 방지)
+const isBrowser = typeof window !== "undefined";
 
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
-const NEXT_PUBLIC_FIREBASE_API_KEY="AIzaSyAagcgMID0mwPRetbbawDGSuETmxL-4IEo"
-const NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="prayer-check-3efed.firebaseapp.com"
-const NEXT_PUBLIC_FIREBASE_PROJECT_ID="prayer-check-3efed"
-const EXT_PUBLIC_FIREBASE_STORAGE_BUCKET="prayer-check-3efed.firebasestorage.app"
-const NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="941135202156"
-const NEXT_PUBLIC_FIREBASE_APP_ID="1:941135202156:web:fbe6ec962818732a961549"
+// 아래 두 개는 브라우저에서만
+export const auth = isBrowser ? getAuth(app) : (null as any);
+export const db = isBrowser ? getFirestore(app) : (null as any);
